@@ -1,0 +1,88 @@
+import java.util.*;
+
+class Card {
+    int value, category;
+
+    Card(int v, int c) {
+        value = v;
+        category = c;
+    }
+
+    @Override
+    public String toString() {
+        return value + "," + category;
+    }
+}
+
+public class no5 {
+    public static void main(String[] args) {
+        try (Scanner sc = new Scanner(System.in)) {
+            ArrayList<Card>[] players = new ArrayList[4];
+            for (int i = 0; i < 4; i++) {
+                players[i] = new ArrayList<>();
+                String[] input = sc.nextLine().split(" ");
+                for (String s : input) {
+                    String[] parts = s.split(",");
+                    int v = Integer.parseInt(parts[0]);
+                    int c = Integer.parseInt(parts[1]);
+                    players[i].add(new Card(v, c));
+                }
+
+                players[i].sort((a, b) -> {
+                    if (a.category != b.category)
+                        return a.category - b.category;
+                    return a.value - b.value;
+                });
+            }
+
+            int current = sc.nextInt() - 1;
+
+            Stack<Card> stack = new Stack<>();
+            int lastPlayer = -1;
+            int passCount = 0;
+
+            while (true) {
+                ArrayList<Card> hand = players[current];
+
+                if (stack.isEmpty() || current == lastPlayer) {
+                    Card chosen = hand.remove(0);
+                    stack.push(chosen);
+                    lastPlayer = current;
+                    passCount = 0;
+                } else {
+                    Card top = stack.peek();
+
+                    for (int i = 0; i < hand.size(); i++) {
+                        Card c = hand.get(i);
+                        if (c.category == top.category && c.value > top.value) {
+                            stack.push(c);
+                            hand.remove(i);
+                            lastPlayer = current;
+                            passCount = 0;
+                            break;
+                        }
+                    }
+                }
+
+                if (passCount == 3) {
+                    current = lastPlayer; 
+                    passCount = 0;
+                    continue;
+                }
+
+                if (players[current].isEmpty()) {
+                    System.out.println(current + 1);
+
+                    while (!stack.isEmpty()) {
+                        System.out.println(stack.pop());
+                    }
+                    break;
+                }
+
+                current = (current + 1) % 4;
+            }
+        } catch (NumberFormatException e) {
+
+        }
+    }
+}
