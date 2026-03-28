@@ -1,0 +1,60 @@
+import java.util.*;
+
+class Person {
+    String name;
+    int key;
+    int priority;
+
+    Person(String name, int key, int priority) {
+        this.name = name;
+        this.key = key;
+        this.priority = priority;
+    }
+}
+
+public class no3 {
+    public static void main(String[] args) {
+        try (Scanner sc = new Scanner(System.in)) {
+            int n = sc.nextInt();
+            for (int i = 0; i < n; i++) {
+                sc.nextInt(); 
+                }
+
+            sc.nextLine();
+            String[] input = sc.nextLine().split(" ");
+
+            int m = input.length / 2;
+
+            String[] names = new String[m];
+            int[] borrowKeys = new int[m];
+
+            for (int i = 0; i < m; i++) {
+                names[i] = input[i * 2];
+                borrowKeys[i] = Integer.parseInt(input[i * 2 + 1]);
+            }
+
+            int[] priority = new int[m];
+            for (int i = 0; i < m; i++) {
+                priority[i] = sc.nextInt();
+            }
+
+            Map<Integer, List<Person>> map = new LinkedHashMap<>();
+
+            for (int i = 0; i < m; i++) {
+                map.putIfAbsent(borrowKeys[i], new ArrayList<>());
+                map.get(borrowKeys[i]).add(new Person(names[i], borrowKeys[i], priority[i]));
+            }
+
+            for (List<Person> group : map.values()) {
+                group.sort(Comparator.comparingInt(p -> p.priority));
+            }
+
+            for (List<Person> group : map.values()) {
+                for (Person p : group) {
+                    System.out.println(p.name + " | " + p.key);
+                }
+            }
+        } catch (NumberFormatException e) {
+        }
+    }
+}
