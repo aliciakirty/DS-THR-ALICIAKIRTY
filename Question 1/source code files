@@ -1,0 +1,126 @@
+import java.util.*;
+
+public class no1 {
+
+    static class Person {
+        int time, index;
+
+        Person(int t, int i) {
+            time = t;
+            index = i;
+        }
+    }
+
+    static void process(Person[] p, int limitTime) {
+        List<String> steps = new ArrayList<>();
+        int total = 0;
+        int left = p.length - 1;
+
+        while (left > 2) {
+            int fastest = p[0].time;
+            int second = p[1].time;
+            int slowest = p[left].time;
+            int secondSlowest = p[left - 1].time;
+
+            int cost1 = fastest + 2 * second + slowest;
+            int cost2 = 2 * fastest + slowest + secondSlowest;
+
+            if (cost1 < cost2) {
+                total += second;
+                steps.add(move(p[0], p[1]));
+
+                total += fastest;
+                steps.add(back(p[0]));
+
+                total += slowest;
+                steps.add(move(p[left - 1], p[left]));
+
+                total += second;
+                steps.add(back(p[1]));
+            } else {
+                total += slowest;
+                steps.add(move(p[0], p[left]));
+
+                total += fastest;
+                steps.add(back(p[0]));
+
+                total += secondSlowest;
+                steps.add(move(p[0], p[left - 1]));
+
+                total += fastest;
+                steps.add(back(p[0]));
+            }
+
+            left -= 2;
+        }
+
+        total += handleLast(p, left, steps);
+
+        printResult(steps, total, limitTime, p);
+    }
+
+    static int handleLast(Person[] p, int left, List<String> steps) {
+        int time = 0;
+
+        switch (left) {
+            case 2 -> {
+                steps.add(move(p[0], p[1]));
+                time += p[1].time;
+                steps.add(back(p[0]));
+                time += p[0].time;
+                steps.add(move(p[0], p[2]));
+                time += p[2].time;
+            }
+            case 1 -> {
+                steps.add(move(p[0], p[1]));
+                time += p[1].time;
+            }
+            case 0 -> {
+                steps.add(p[0].index + " ->");
+                time += p[0].time;
+            }
+            default -> {
+            }
+        }
+
+        return time;
+    }
+
+    static String move(Person a, Person b) {
+        return a.index + " " + b.index + " ->";
+    }
+
+    static String back(Person a) {
+        return a.index + " <-";
+    }
+
+    static void printResult(List<String> steps, int total, int limit, Person[] p) {
+        for (String s : steps) {
+            System.out.println(s);
+        }
+
+        if (total > limit) {
+            List<Integer> fail = new ArrayList<>();
+            fail.add(p[0].index);
+            fail.add(p[1].index);
+            System.out.println("Non-survivors: " + fail);
+        }
+    }
+
+    public static void main(String[] args) {
+        try (Scanner sc = new Scanner(System.in)) {
+            int n = sc.nextInt();
+            int limitTime = sc.nextInt();
+
+            Person[] people = new Person[n];
+
+            for (int i = 0; i < n; i++) {
+                people[i] = new Person(sc.nextInt(), i + 1);
+            }
+
+            Arrays.sort(people, Comparator.comparingInt(p -> p.time));
+
+            process(people, limitTime);
+        }
+    }
+}
