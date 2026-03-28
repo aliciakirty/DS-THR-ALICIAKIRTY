@@ -1,0 +1,53 @@
+import java.util.*;
+
+public class no4 {
+    public static void main(String[] args) {
+        try (Scanner sc = new Scanner(System.in)) {
+            StringBuilder sb = new StringBuilder();
+            while (sc.hasNextLine()) {
+                String line = sc.nextLine();
+                if (line.trim().isEmpty()) break;
+                sb.append(line).append(" ");
+            }
+
+            String[] tokens = sb.toString().trim().split("\\s+");
+
+            List<String> cards = Arrays.asList(tokens);
+
+            List<List<String>> stacks = new ArrayList<>();
+            List<Set<String>> used = new ArrayList<>();
+
+            for (String card : cards) {
+                boolean placed = false;
+
+                for (int i = 0; i < stacks.size(); i++) {
+                    if (!used.get(i).contains(card)) {
+                        stacks.get(i).add(card);
+                        used.get(i).add(card);
+                        placed = true;
+                        break;
+                    }
+                }
+
+                if (!placed) {
+                    List<String> newStack = new ArrayList<>();
+                    Set<String> newSet = new HashSet<>();
+
+                    newStack.add(card);
+                    newSet.add(card);
+
+                    stacks.add(newStack);
+                    used.add(newSet);
+                }
+            }
+
+            for (List<String> stack : stacks) {
+                for (int i = 0; i < stack.size(); i++) {
+                    System.out.print(stack.get(i));
+                    if (i != stack.size() - 1) System.out.print(" ");
+                }
+                System.out.println();
+            }
+        }
+    }
+}
